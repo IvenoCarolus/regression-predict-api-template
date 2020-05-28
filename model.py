@@ -73,6 +73,7 @@ def _preprocess_data(data):
     # ---------------------------------------------------------------
 
     # ----------- Replace this code with your own preprocessing steps --------
+"""    
     combined_data['Placement_Datetime'] = pd.to_datetime(combined_data['Placement - Time'])
     combined_data.loc[:, 'Placement_Date'] = combined_data['Placement_Datetime'].dt.date
     combined_data['Confirmation_datetime'] = pd.to_datetime(combined_data['Confirmation - Time'])
@@ -81,9 +82,9 @@ def _preprocess_data(data):
 
 
     combined_data.drop(["Confirmation_datetime", "Placement_Date", "Placement_Datetime"], axis=1, inplace=True)
-    #combined_data.drop(["Arrival at Destination - Day of Month", "Arrival at Destination - Weekday (Mo = 1)",
-    #                    "Arrival at Destination - Time"],
-    #                   axis=1, inplace=True)
+#    combined_data.drop(["Arrival at Destination - Day of Month", "Arrival at Destination - Weekday (Mo = 1)",
+#                        "Arrival at Destination - Time"],
+#                       axis=1, inplace=True)
     combined_data.drop('Trip_Duration', axis=1, inplace=True)
     combined_data['Temperature'] = combined_data['Temperature'].fillna((combined_data['Temperature'].mean()))
     combined_data['Precipitation in millimeters'] = combined_data['Precipitation in millimeters'].fillna(0)
@@ -105,7 +106,6 @@ def _preprocess_data(data):
     combined_data.replace(transport, inplace=True)
     combined_data = pd.get_dummies(combined_data)
     print(combined_data)
-
     """
     predict_vector['Pickup - Time'] = pd.to_datetime(predict_vector['Pickup - Time'])
     predict_vector['Pickup - Hour'] = [i.hour for i in predict_vector['Pickup - Time']]
@@ -142,10 +142,10 @@ def _preprocess_data(data):
     predict_vector['Temperature'] = predict_vector['Temperature'].fillna(predict_vector['Temperature'].mean())
 
     predict_vector = pd.DataFrame(predict_vector)
-    """
+    return predict_vector
     # ------------------------------------------------------------------------
 
-    return combined_data
+    #return combined_data
 
 def load_model(path_to_model:str):
     """Adapter function to load our pretrained model into memory.
