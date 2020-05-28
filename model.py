@@ -99,7 +99,6 @@ def _preprocess_data(data):
                  "Personal or Business": {"Personal": 1, "Business": 2, }}
     combined_data.replace(transport, inplace=True)
     combined_data = pd.get_dummies(combined_data)
-    print(combined_data)
 
     """
     predict_vector['Pickup - Time'] = pd.to_datetime(predict_vector['Pickup - Time'])
