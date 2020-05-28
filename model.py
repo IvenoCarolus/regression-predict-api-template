@@ -62,7 +62,7 @@ def _preprocess_data(data):
     feature_vector_dict = json.loads(data)
     # Load the dictionary as a Pandas DataFrame.
     feature_vector_df = pd.DataFrame.from_dict([feature_vector_dict])
-    combined_data = feature_vector_df.copy()
+    predict_vector = feature_vector_df.copy()
 
     # ---------------------------------------------------------------
     # NOTE: You will need to swap the lines below for your own data
