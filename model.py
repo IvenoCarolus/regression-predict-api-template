@@ -22,8 +22,21 @@
 """
 
 # Helper Dependencies
-import numpy as np
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_squared_error
+from catboost import CatBoostRegressor,Pool, cv
+from sklearn.model_selection import GridSearchCV
+from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import accuracy_score
+from sklearn.model_selection import KFold
+from sklearn.model_selection import cross_val_score
+from math import sqrt
+import catboost
+import math
 import pandas as pd
+import numpy as np
 import pickle
 import json
 
@@ -49,6 +62,7 @@ def _preprocess_data(data):
     feature_vector_dict = json.loads(data)
     # Load the dictionary as a Pandas DataFrame.
     feature_vector_df = pd.DataFrame.from_dict([feature_vector_dict])
+    combined_data = feature_vector_df.copy()
 
     # ---------------------------------------------------------------
     # NOTE: You will need to swap the lines below for your own data
@@ -59,11 +73,74 @@ def _preprocess_data(data):
     # ---------------------------------------------------------------
 
     # ----------- Replace this code with your own preprocessing steps --------
-    predict_vector = feature_vector_df[['Pickup Lat','Pickup Long',
-                                        'Destination Lat','Destination Long']]
+    combined_data['Placement_Datetime'] = pd.to_datetime(combined_data['Placement - Time'])
+    combined_data.loc[:, 'Placement_Date'] = combined_data['Placement_Datetime'].dt.date
+    combined_data['Confirmation_datetime'] = pd.to_datetime(combined_data['Confirmation - Time'])
+    combined_data['Trip_Duration'] = (combined_data['Confirmation_datetime'] - combined_data['Placement_Datetime']).map(
+        lambda x: x.total_seconds())
+
+
+    combined_data.drop(["Confirmation_datetime", "Placement_Date", "Placement_Datetime"], axis=1, inplace=True)
+    combined_data['Temperature'] = combined_data['Temperature'].fillna((combined_data['Temperature'].mean()))
+    combined_data['Arrival at Pickup - Time'] = pd.to_datetime(combined_data['Arrival at Pickup - Time'])
+    combined_data['A_hour'] = combined_data['Arrival at Pickup - Time'].dt.hour
+    combined_data['A_seconds'] = combined_data['Arrival at Pickup - Time'].dt.second
+    combined_data['A_minutes'] = combined_data['Arrival at Pickup - Time'].dt.minute
+    combined_data['am_or_pm_confirm'] = combined_data['Confirmation - Time'].astype('str').apply(
+        lambda x: x.split(' ')[-1])
+    combined_data['Confirmation - Time'] = pd.to_datetime(combined_data['Confirmation - Time'])
+    combined_data['C_hour'] = combined_data['Confirmation - Time'].dt.hour
+    combined_data['C_min'] = combined_data['Confirmation - Time'].dt.minute
+    combined_data['C_sec'] = combined_data['Confirmation - Time'].dt.second
+    combined_data.drop(['Arrival at Pickup - Time', 'Confirmation - Time'], axis=1, inplace=True)
+    combined_data.drop('Order No', axis=1, inplace=True)
+    combined_data.drop(['Pickup - Time', 'Placement - Time', 'Rider Id'], axis=1, inplace=True)
+    transport = {"Vehicle Type": {"Bike": 1, "Other": 2},
+                 "Personal or Business": {"Personal": 1, "Business": 2, }}
+    combined_data.replace(transport, inplace=True)
+    combined_data = pd.get_dummies(combined_data)
+    print(combined_data)
+
+    """
+    predict_vector['Pickup - Time'] = pd.to_datetime(predict_vector['Pickup - Time'])
+    predict_vector['Pickup - Hour'] = [i.hour for i in predict_vector['Pickup - Time']]
+    predict_vector['Pickup - Min'] = [i.minute for i in predict_vector['Pickup - Time']]
+    predict_vector['Pickup - Sec'] = [i.second for i in predict_vector['Pickup - Time']]
+
+    predict_vector['Arrival at Pickup - Time'] = pd.to_datetime(predict_vector['Arrival at Pickup - Time'])
+    predict_vector['Arrival at Pickup - Hour'] = [i.hour for i in predict_vector['Arrival at Pickup - Time']]
+    predict_vector['Arrival at Pickup - Min'] = [i.minute for i in predict_vector['Arrival at Pickup - Time']]
+    predict_vector['Arrival at Pickup - Sec'] = [i.second for i in predict_vector['Arrival at Pickup - Time']]
+
+    predict_vector['Confirmation - Time'] = pd.to_datetime(predict_vector['Confirmation - Time'])
+    predict_vector['Confirmation - Hour'] = [i.hour for i in predict_vector['Confirmation - Time']]
+    predict_vector['Confirmation - Min'] = [i.minute for i in predict_vector['Confirmation - Time']]
+    predict_vector['Confirmation - Sec'] = [i.second for i in predict_vector['Confirmation - Time']]
+
+    predict_vector['Placement - Time'] = pd.to_datetime(predict_vector['Placement - Time'])
+    predict_vector['Placement - Hour'] = [i.hour for i in predict_vector['Placement - Time']]
+    predict_vector['Placement - Min'] = [i.minute for i in predict_vector['Placement - Time']]
+    predict_vector['Placement - Sec'] = [i.second for i in predict_vector['Placement - Time']]
+
+    predict_vector = predict_vector.drop('Order No', axis=1)
+    predict_vector = predict_vector.drop('User Id', axis=1)
+    predict_vector = predict_vector.drop('Personal or Business', axis=1)
+    predict_vector = predict_vector.drop('Rider Id', axis=1)
+    predict_vector = predict_vector.drop('Vehicle Type', axis=1)
+    predict_vector = predict_vector.drop('Precipitation in millimeters', axis=1)
+    predict_vector = predict_vector.drop('Platform Type', axis=1)
+    predict_vector = predict_vector.drop('Pickup - Time', axis=1)
+    predict_vector = predict_vector.drop('Arrival at Pickup - Time', axis=1)
+    predict_vector = predict_vector.drop('Confirmation - Time', axis=1)
+    predict_vector = predict_vector.drop('Placement - Time', axis=1)
+
+    predict_vector['Temperature'] = predict_vector['Temperature'].fillna(predict_vector['Temperature'].mean())
+
+    predict_vector = pd.DataFrame(predict_vector)
+    """
     # ------------------------------------------------------------------------
 
-    return predict_vector
+    return combined_data
 
 def load_model(path_to_model:str):
     """Adapter function to load our pretrained model into memory.
@@ -104,4 +181,4 @@ def make_prediction(data, model):
     # Perform prediction with model and preprocessed data.
     prediction = model.predict(prep_data)
     # Format as list for output standerdisation.
-    return prediction[0].tolist()
+    return [round(i) for i in prediction.tolist()]
