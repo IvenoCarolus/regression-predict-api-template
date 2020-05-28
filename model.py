@@ -82,8 +82,8 @@ def _preprocess_data(data):
 
     combined_data.drop(["Confirmation_datetime", "Placement_Date", "Placement_Datetime"], axis=1, inplace=True)
     #combined_data.drop(["Arrival at Destination - Day of Month", "Arrival at Destination - Weekday (Mo = 1)",
-                        "Arrival at Destination - Time"],
-                       axis=1, inplace=True)
+    #                    "Arrival at Destination - Time"],
+    #                   axis=1, inplace=True)
     combined_data.drop('Trip_Duration', axis=1, inplace=True)
     combined_data['Temperature'] = combined_data['Temperature'].fillna((combined_data['Temperature'].mean()))
     combined_data['Precipitation in millimeters'] = combined_data['Precipitation in millimeters'].fillna(0)
