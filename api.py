@@ -25,7 +25,7 @@ from model import load_model, make_prediction
 from flask import Flask, request, jsonify
 
 # Application definition
-app = Flask('TEAM_5_Nairobi_Model')
+app = Flask('TEAM_5DBN_Nairobi_Model')
 
 # Load our model into memory.
 # Please update this path to reflect your own trained model.
