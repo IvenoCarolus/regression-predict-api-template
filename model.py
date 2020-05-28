@@ -73,7 +73,7 @@ def _preprocess_data(data):
     # ---------------------------------------------------------------
 
     # ----------- Replace this code with your own preprocessing steps --------
-"""    
+    """    
     combined_data['Placement_Datetime'] = pd.to_datetime(combined_data['Placement - Time'])
     combined_data.loc[:, 'Placement_Date'] = combined_data['Placement_Datetime'].dt.date
     combined_data['Confirmation_datetime'] = pd.to_datetime(combined_data['Confirmation - Time'])
