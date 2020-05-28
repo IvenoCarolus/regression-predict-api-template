@@ -81,7 +81,12 @@ def _preprocess_data(data):
 
 
     combined_data.drop(["Confirmation_datetime", "Placement_Date", "Placement_Datetime"], axis=1, inplace=True)
+    combined_data.drop(["Arrival at Destination - Day of Month", "Arrival at Destination - Weekday (Mo = 1)",
+                        "Arrival at Destination - Time"],
+                       axis=1, inplace=True)
+    combined_data.drop('Trip_Duration', axis=1, inplace=True)
     combined_data['Temperature'] = combined_data['Temperature'].fillna((combined_data['Temperature'].mean()))
+    combined_data['Precipitation in millimeters'] = combined_data['Precipitation in millimeters'].fillna(0)
     combined_data['Arrival at Pickup - Time'] = pd.to_datetime(combined_data['Arrival at Pickup - Time'])
     combined_data['A_hour'] = combined_data['Arrival at Pickup - Time'].dt.hour
     combined_data['A_seconds'] = combined_data['Arrival at Pickup - Time'].dt.second
@@ -92,13 +97,14 @@ def _preprocess_data(data):
     combined_data['C_hour'] = combined_data['Confirmation - Time'].dt.hour
     combined_data['C_min'] = combined_data['Confirmation - Time'].dt.minute
     combined_data['C_sec'] = combined_data['Confirmation - Time'].dt.second
-    combined_data.drop(['Confirmation - Time'], axis=1, inplace=True)
+    combined_data.drop(['Arrival at Pickup - Time', 'Confirmation - Time'], axis=1, inplace=True)
     combined_data.drop('Order No', axis=1, inplace=True)
     combined_data.drop(['Pickup - Time', 'Placement - Time', 'Rider Id'], axis=1, inplace=True)
     transport = {"Vehicle Type": {"Bike": 1, "Other": 2},
                  "Personal or Business": {"Personal": 1, "Business": 2, }}
     combined_data.replace(transport, inplace=True)
     combined_data = pd.get_dummies(combined_data)
+    print(combined_data)
 
     """
     predict_vector['Pickup - Time'] = pd.to_datetime(predict_vector['Pickup - Time'])
