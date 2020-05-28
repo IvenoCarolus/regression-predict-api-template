@@ -92,7 +92,7 @@ def _preprocess_data(data):
     combined_data['C_hour'] = combined_data['Confirmation - Time'].dt.hour
     combined_data['C_min'] = combined_data['Confirmation - Time'].dt.minute
     combined_data['C_sec'] = combined_data['Confirmation - Time'].dt.second
-    combined_data.drop(['Arrival at Pickup - Time', 'Confirmation - Time'], axis=1, inplace=True)
+    combined_data.drop(['Confirmation - Time'], axis=1, inplace=True)
     combined_data.drop('Order No', axis=1, inplace=True)
     combined_data.drop(['Pickup - Time', 'Placement - Time', 'Rider Id'], axis=1, inplace=True)
     transport = {"Vehicle Type": {"Bike": 1, "Other": 2},
