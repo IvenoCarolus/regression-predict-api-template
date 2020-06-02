@@ -73,7 +73,7 @@ def _preprocess_data(data):
     # ---------------------------------------------------------------
 
     # ----------- Replace this code with your own preprocessing steps --------
-    """    
+    
     combined_data['Placement_Datetime'] = pd.to_datetime(combined_data['Placement - Time'])
     combined_data.loc[:, 'Placement_Date'] = combined_data['Placement_Datetime'].dt.date
     combined_data['Confirmation_datetime'] = pd.to_datetime(combined_data['Confirmation - Time'])
@@ -105,7 +105,6 @@ def _preprocess_data(data):
                  "Personal or Business": {"Personal": 1, "Business": 2, }}
     combined_data.replace(transport, inplace=True)
     combined_data = pd.get_dummies(combined_data)
-    print(combined_data)
     """
     predict_vector['Pickup - Time'] = pd.to_datetime(predict_vector['Pickup - Time'])
     predict_vector['Pickup - Hour'] = [i.hour for i in predict_vector['Pickup - Time']]
@@ -142,7 +141,8 @@ def _preprocess_data(data):
     predict_vector['Temperature'] = predict_vector['Temperature'].fillna(predict_vector['Temperature'].mean())
 
     predict_vector = pd.DataFrame(predict_vector)
-    return predict_vector
+    """
+    return combined_df
     # ------------------------------------------------------------------------
 
     #return combined_data
