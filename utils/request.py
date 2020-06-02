@@ -97,10 +97,10 @@ def preprocess_data(data):
 # Load data from file to send as an API POST request.
 # We prepare a DataFrame with the public test set + riders data
 # from the Zindi challenge.
-train = pd.read_csv('data/train_data.csv')
-test = pd.read_csv('data/test_data.csv')
+train = pd.read_csv('/home/explore-student/team_5_sendy_api/utils/data/train_data.csv')
+test = pd.read_csv('/home/explore-student/team_5_sendy_api/utils/data/test_data.csv')
 prev_test = test
-riders = pd.read_csv('data/riders.csv')
+riders = pd.read_csv('/home/explore-student/team_5_sendy_api/utils/data/riders.csv')
 test = test.merge(riders, how='left', on='Rider Id')
 test = pd.concat((train, test)).reset_index(drop=True)
 test=preprocess_data(test)
